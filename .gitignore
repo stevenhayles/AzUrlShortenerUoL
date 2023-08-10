@@ -271,3 +271,4 @@ src/adminTools/adminBlazorWebsite/src/appsettings.Development.json
 
 #Igniore VSCode User Setting
 **/.vscode/settings.json
+/.github/workflows/azure-static-web-apps-red-cliff-06283f903.yml
