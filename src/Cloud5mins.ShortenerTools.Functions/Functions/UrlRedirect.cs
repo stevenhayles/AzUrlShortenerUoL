@@ -2,6 +2,7 @@ using Cloud5mins.ShortenerTools.Core.Domain;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using System; 
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +36,16 @@ namespace Cloud5mins.ShortenerTools.Functions
 
                 StorageTableHelper stgHelper = new StorageTableHelper(_settings.DataStorage);
 
-                var tempUrl = new ShortUrlEntity(string.Empty, shortUrl);
+                var slashIndex = shortUrl.IndexOf("/");
+                var firstPart = shortUrl;
+                var secondPart = "";
+                if (slashIndex != -1)
+                {
+                    firstPart = shortUrl.Substring(0, slashIndex);
+                    secondPart = shortUrl.Substring(slashIndex+1);
+                } // if
+
+                var tempUrl = new ShortUrlEntity(string.Empty, firstPart);
                 var newUrl = await stgHelper.GetShortUrlEntity(tempUrl);
 
                 if (newUrl != null)
@@ -45,6 +55,10 @@ namespace Cloud5mins.ShortenerTools.Functions
                     await stgHelper.SaveClickStatsEntity(new ClickStatsEntity(newUrl.RowKey));
                     await stgHelper.SaveShortUrlEntity(newUrl);
                     redirectUrl = WebUtility.UrlDecode(newUrl.ActiveUrl);
+                    if (secondPart.Length > 0)
+                    {
+                        redirectUrl =  new Uri(redirectUrl, secondPart).ToString;
+                    } // if
                 }
             }
             else
