@@ -49,7 +49,8 @@ namespace Cloud5mins.ShortenerTools.Functions
                     redirectUrl = WebUtility.UrlDecode(newUrl.ActiveUrl);
                     if (!String.IsNullOrEmpty(restOfPath))
                     {
-                        redirectUrl =  new Uri(new Uri(redirectUrl), restOfPath).ToString();
+                        Uri tempUri = new Uri(redirectUrl);
+                        redirectUrl =  new Uri(tempUri, restOfPath + tempUri.Query).ToString();
                     } // if
                 }
             }
