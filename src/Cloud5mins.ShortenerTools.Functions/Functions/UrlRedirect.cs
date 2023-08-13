@@ -22,10 +22,10 @@ namespace Cloud5mins.ShortenerTools.Functions
 
         [Function("UrlRedirect")]
         public async Task<HttpResponseData> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{shortUrl}/{*restOfPath")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{shortUrl}/{*restOfPath}")]
             HttpRequestData req,
             string shortUrl,
-            string restOfPath,
+            string? restOfPath,
             ExecutionContext context)
         {
             string redirectUrl = "https://azure.com";
@@ -47,7 +47,7 @@ namespace Cloud5mins.ShortenerTools.Functions
                     await stgHelper.SaveClickStatsEntity(new ClickStatsEntity(newUrl.RowKey));
                     await stgHelper.SaveShortUrlEntity(newUrl);
                     redirectUrl = WebUtility.UrlDecode(newUrl.ActiveUrl);
-                    if (restOfPath.Length > 0)
+                    if (String.IsNullOrEmpty(restOfPath))
                     {
                         redirectUrl =  new Uri(new Uri(redirectUrl), restOfPath).ToString();
                     } // if
