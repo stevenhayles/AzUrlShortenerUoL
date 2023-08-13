@@ -25,6 +25,7 @@ namespace Cloud5mins.ShortenerTools.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{shortUrl}/{*restOfPath")]
             HttpRequestData req,
             string shortUrl,
+            string restOfPath,
             ExecutionContext context)
         {
             string redirectUrl = "https://azure.com";
