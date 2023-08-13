@@ -47,8 +47,7 @@ namespace Cloud5mins.ShortenerTools.Functions
                     await stgHelper.SaveClickStatsEntity(new ClickStatsEntity(newUrl.RowKey));
                     await stgHelper.SaveShortUrlEntity(newUrl);
                     redirectUrl = WebUtility.UrlDecode(newUrl.ActiveUrl);
-                    if (!String.IsNullOrEmpty
-                        (restOfPath))
+                    if (!String.IsNullOrEmpty(restOfPath))
                     {
                         redirectUrl =  new Uri(new Uri(redirectUrl), restOfPath).ToString();
                     } // if
