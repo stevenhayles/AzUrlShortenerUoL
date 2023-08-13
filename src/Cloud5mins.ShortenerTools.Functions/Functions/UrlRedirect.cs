@@ -22,7 +22,7 @@ namespace Cloud5mins.ShortenerTools.Functions
 
         [Function("UrlRedirect")]
         public async Task<HttpResponseData> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{shortUrl}")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{shortUrl}/{*restOfPath")]
             HttpRequestData req,
             string shortUrl,
             ExecutionContext context)
@@ -36,16 +36,7 @@ namespace Cloud5mins.ShortenerTools.Functions
 
                 StorageTableHelper stgHelper = new StorageTableHelper(_settings.DataStorage);
 
-                var slashIndex = shortUrl.IndexOf("/");
-                var firstPart = shortUrl;
-                var secondPart = "";
-                if (slashIndex != -1)
-                {
-                    firstPart = shortUrl.Substring(0, slashIndex);
-                    secondPart = shortUrl.Substring(slashIndex+1);
-                } // if
-
-                var tempUrl = new ShortUrlEntity(string.Empty, firstPart);
+                var tempUrl = new ShortUrlEntity(string.Empty, shortUrl);
                 var newUrl = await stgHelper.GetShortUrlEntity(tempUrl);
 
                 if (newUrl != null)
@@ -55,9 +46,9 @@ namespace Cloud5mins.ShortenerTools.Functions
                     await stgHelper.SaveClickStatsEntity(new ClickStatsEntity(newUrl.RowKey));
                     await stgHelper.SaveShortUrlEntity(newUrl);
                     redirectUrl = WebUtility.UrlDecode(newUrl.ActiveUrl);
-                    if (secondPart.Length > 0)
+                    if (restOfPath.length > 0)
                     {
-                        redirectUrl =  new Uri(new Uri(redirectUrl), secondPart).ToString();
+                        redirectUrl =  new Uri(new Uri(redirectUrl), restOfPath).ToString();
                     } // if
                 }
             }
