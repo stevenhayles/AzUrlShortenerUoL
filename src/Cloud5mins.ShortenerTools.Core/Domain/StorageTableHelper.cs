@@ -175,17 +175,33 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
                 var queryResult = await tblUrls.ExecuteQuerySegmentedAsync(rangeQuery, token);
                 lstShortUrl.AddRange(queryResult.Results as List<ClickStatsEntity>);
                 token = queryResult.ContinuationToken;
+                token = queryResult.ContinuationToken;
             } while (token != null);
             return lstShortUrl;
         }
 
 
-        public async Task<ShortUrlEntity> ArchiveShortUrlEntity(ShortUrlEntity urlEntity)
+        public async Task<ShortUrlEntity> ArchiveShortUrlEntity(ShortUrlEntity urlEntity,bool archive)
         {
             ShortUrlEntity originalUrl = await GetShortUrlEntity(urlEntity);
-            originalUrl.IsArchived = true;
+            originalUrl.IsArchived = archive;
 
             return await SaveShortUrlEntity(originalUrl);
+        }
+
+
+        /* Must be archived before delete is allowed */
+        public async Task<ShortUrlEntity> DeleteShortUrlEntity(ShortUrlEntity urlEntity)
+        {
+            ShortUrlEntity originalUrl = await GetShortUrlEntity(urlEntity);
+            TableResult result = null;
+            if (originalUrl.IsArchived == true) // !! this should probably be done a level higher
+            {
+                TableOperation delOperation = TableOperation.Delete(urlEntity);
+                result = await GetUrlsTable().ExecuteAsync(delOperation);
+                ShortUrlEntity eShortUrl = result.Result as ShortUrlEntity;
+            }
+            return result.Result;
         }
     }
 }
