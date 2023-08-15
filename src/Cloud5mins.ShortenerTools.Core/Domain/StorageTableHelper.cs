@@ -189,19 +189,24 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
             return await SaveShortUrlEntity(originalUrl);
         }
 
+        /* Returns false if it's not archived or it doesn't exist. true otherwise */
+        public async Task<bool> IfShortUrlEntityArchived(ShortUrlEntity row)
+        {
+            ShortUrlEntity eShortUrl = await GetShortUrlEntity(row);
+            return (eShortUrl != null && eShortUrl.IsArchived == true);
+        }
 
-        /* Must be archived before delete is allowed */
+
+        /* Should not be called unless the entity exists and is acrhived */
         public async Task<ShortUrlEntity> DeleteShortUrlEntity(ShortUrlEntity urlEntity)
         {
             ShortUrlEntity originalUrl = await GetShortUrlEntity(urlEntity);
-            TableResult result = null;
-            if (originalUrl.IsArchived == true) // !! this should probably be done a level higher
-            {
-                TableOperation delOperation = TableOperation.Delete(urlEntity);
-                result = await GetUrlsTable().ExecuteAsync(delOperation);
-                ShortUrlEntity eShortUrl = result.Result as ShortUrlEntity;
-            }
-            return result.Result;
+
+            TableOperation delOperation = TableOperation.Delete(urlEntity);
+            TableResult result = await GetUrlsTable().ExecuteAsync(delOperation);
+            ShortUrlEntity eShortUrl = result.Result as ShortUrlEntity;
+
+            return eShortUrl;
         }
     }
 }

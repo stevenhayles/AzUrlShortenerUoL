@@ -74,6 +74,11 @@ namespace Cloud5mins.ShortenerTools.Functions
 
                 StorageTableHelper stgHelper = new StorageTableHelper(_settings.DataStorage);
 
+                if (! await stgHelper.IfShortUrlEntityArchived(input))
+                {
+                    return req.CreateResponse(HttpStatusCode.NotFound);
+                }
+
                 result = await stgHelper.DeleteShortUrlEntity(input);
             }
             catch (Exception ex)
