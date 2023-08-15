@@ -193,7 +193,7 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
         public async Task<bool> IfShortUrlEntityArchived(ShortUrlEntity row)
         {
             ShortUrlEntity eShortUrl = await GetShortUrlEntity(row);
-            return (eShortUrl != null && eShortUrl.IsArchived == true);
+            return eShortUrl.IsArchived ?? false;
         }
 
 

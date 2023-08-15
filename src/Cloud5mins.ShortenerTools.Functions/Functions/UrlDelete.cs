@@ -76,7 +76,10 @@ namespace Cloud5mins.ShortenerTools.Functions
 
                 if (! await stgHelper.IfShortUrlEntityArchived(input))
                 {
-                    return req.CreateResponse(HttpStatusCode.NotFound);
+                    ShortUrlEntity eShortUrl = await stgHelper.GetShortUrlEntity(input);
+                    var notArchivedResponse = req.CreateResponse(HttpStatusCode.NotFound);
+                    await notArchivedResponse.WriteAsJsonAsync(new { message = "Not found or not archived",requested=input,found=eShortUrl });
+                    return notArchivedResponse;
                 }
 
                 result = await stgHelper.DeleteShortUrlEntity(input);
