@@ -74,15 +74,16 @@ namespace Cloud5mins.ShortenerTools.Functions
 
                 StorageTableHelper stgHelper = new StorageTableHelper(_settings.DataStorage);
 
-                if (! await stgHelper.IfShortUrlEntityArchived(input))
+                ShortUrlEntity eShortUrl = await stgHelper.GetShortUrlEntity(input);
+
+                if ( ! (eShortUrl?.IsArchived??false))
                 {
-                    ShortUrlEntity eShortUrl = await stgHelper.GetShortUrlEntity(input);
                     var notArchivedResponse = req.CreateResponse(HttpStatusCode.BadRequest);
                     await notArchivedResponse.WriteAsJsonAsync(new { message = "Not found or not archived", requested=input, found=eShortUrl });
                     return notArchivedResponse;
                 }
 
-                result = await stgHelper.DeleteShortUrlEntity(input);
+                result = await stgHelper.DeleteShortUrlEntity(eShortUrl);
             }
             catch (Exception ex)
             {
