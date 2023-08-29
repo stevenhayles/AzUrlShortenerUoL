@@ -175,7 +175,6 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
                 var queryResult = await tblUrls.ExecuteQuerySegmentedAsync(rangeQuery, token);
                 lstShortUrl.AddRange(queryResult.Results as List<ClickStatsEntity>);
                 token = queryResult.ContinuationToken;
-                token = queryResult.ContinuationToken;
             } while (token != null);
             return lstShortUrl;
         }
